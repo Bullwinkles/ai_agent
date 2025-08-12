@@ -6,21 +6,23 @@ from google.genai import types
 
 def main():
 
-    verbose_flag = False
+    verbose_flag = "--verbose" in sys.argv
 
-    if len(sys.argv) < 2:
+    args = []
+    for arg in sys.argv[1:]:
+        if not arg.startswith("--"):
+            args.append(arg)
+            
+    if len(args) < 1:
         print("Please provide a prompt for the ai.")
         sys.exit(1)
-        
-    if "--verbose" in sys.argv:
-        verbose_flag = True
         
     load_dotenv()
 
     api_key = os.environ.get("GEMINI_API_KEY")
     client = genai.Client(api_key = api_key)
     model = "gemini-2.0-flash-001"
-    contents = sys.argv[1]
+    contents = " ".join(args) 
     
     messages = [
             types.Content(role = "user", parts = [types.Part(text = contents)]),
@@ -32,14 +34,14 @@ def main():
 
     if verbose_flag == True:
         
-        print(response.text)
+        print("\n" + response.text)
         print(f"User prompt: {contents}")
         print(f"Prompt tokens: {prompt_tokens}")
         print(f"Response tokens: {response_tokens}")
         
     else:
         
-        print(response.text)
+        print("\n" + response.text)
     
 if __name__ == "__main__":
     main()
