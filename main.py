@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+from config import system_prompt
 
 def main():
 
@@ -28,7 +29,12 @@ def main():
             types.Content(role = "user", parts = [types.Part(text = contents)]),
     ]
 
-    response = client.models.generate_content(model = model, contents = messages)
+    response = client.models.generate_content(
+        model = model, 
+        contents = messages, 
+        config = types.GenerateContentConfig(system_instruction = system_prompt)
+    )
+
     prompt_tokens = response.usage_metadata.prompt_token_count
     response_tokens = response.usage_metadata.candidates_token_count
 
